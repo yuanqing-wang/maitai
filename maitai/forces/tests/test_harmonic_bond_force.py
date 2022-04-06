@@ -1,5 +1,6 @@
 import pytest
 import numpy.testing as npt
+from typing import Tuple
 
 def test_initialize_and_get_energy():
     import taichi as ti
@@ -10,22 +11,40 @@ def test_initialize_and_get_energy():
     force = mt.forces.HarmonicBondForce()
     force.add_bond(0, 1, 1.0, 1.0)
 
-    geometry = ti.field(ti.f32, (2, 3))
+    geometry = ti.field(ti.f32, (2, 3), needs_grad=True)
     geometry.from_numpy(
         np.array(
             [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]],
         )
     )
 
-    @ti.kernel
-    def test_kernel() -> float:
-        get_energy = force.get_energy(geometry)
-        return get_energy
+    energy = ti.field(ti.f32, (), needs_grad=True)
+    energy[None] = 0.0
 
-    get_energy = test_kernel()
+    @ti.kernel
+    def test_energy():
+        _energy = force.get_energy(geometry)
+        energy[None] += _energy
+
+    @ti.kernel
+    def test_grad():
+        force.get_grad(geometry, grad)
+
+    with ti.Tape(energy):
+        test_energy()
+
+    grad = ti.field(ti.f32, (2, 3))
+    grad.from_numpy(np.zeros((2, 3)))
+
+    test_grad()
 
     import math
     npt.assert_almost_equal(
-        get_energy,
+        energy.to_numpy(),
         0.5 * 1.0 * (math.sqrt(3) - 1.0) ** 2
+    )
+
+    npt.assert_almost_equal(
+        -geometry.grad.to_numpy(),
+        grad.to_numpy(),
     )
