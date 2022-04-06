@@ -26,8 +26,7 @@ class Simulation(object):
 
     @ti.func
     def zero_grad(self):
-        for i, j in self._grad:
-            self._grad[i, j] = 0.0
+        self._grad.fill(0.0)
 
     @ti.func
     def get_grad(self) -> ti.f32:
