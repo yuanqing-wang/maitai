@@ -6,7 +6,7 @@ class Simulation(object):
         self.system = system
         self.integrator = integrator
         self._geometry = ti.field(float, shape=(system.n_atoms, 3), needs_grad=True)
-        self._energy = ti.field(float)
+        self._get_energy = ti.field(float)
 
     def set_geometry(self, geometry: float) -> None:
         self._geometry.copy_from(geometry)
@@ -15,14 +15,9 @@ class Simulation(object):
         return self._geometry
 
     @ti.kernel
-    def evaluate(self) -> float:
-        energy = 0.0
+    def get_energy(self) -> float:
+        get_energy = 0.0
         for force in ti.static(self.system.forces):
-            energy = energy + force.evaluate(self._geometry)
-        self._energy = energy
-        return energy
-
-    @ti.kernel
-    def grad(self):
-        with ti.Tape(self._energy):
-            self.evaluate()
+            get_energy = get_energy + force.get_energy(self._geometry)
+        self._get_energy = get_energy
+        return get_energy

@@ -21,4 +21,4 @@ def test_simulation_construct():
     )
 
     simulation.set_geometry(geometry)
-    energy = simulation.evaluate()
+    energy = simulation.get_energy()

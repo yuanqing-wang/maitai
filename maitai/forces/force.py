@@ -7,5 +7,9 @@ class Force(object):
         pass
 
     @abc.abstractmethod
-    def evaluate(self, geometry: float) -> float:
+    def get_energy(self, geometry: float) -> float:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_grad(self, geometry: float, grad: float) -> None:
         raise NotImplementedError
