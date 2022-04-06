@@ -1,6 +1,6 @@
 import pytest
 
-def test_simulation_construct():
+def test_derivatives():
     import taichi as ti
     import numpy as np
     ti.init()
