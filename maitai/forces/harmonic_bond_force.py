@@ -57,3 +57,20 @@ class HarmonicBondForce(Force):
             x1, y1, z1 = geometry[particle1, 0], geometry[particle1, 1], geometry[particle1, 2]
             x2, y2, z2 = geometry[particle2, 0], geometry[particle2, 1], geometry[particle2, 2]
             distance = ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2) ** 0.5
+            d_energy_d_distance = k * (distance - length)
+
+            d_energy_d_x1 = (x1 - x2) / d_energy_d_distance
+            d_energy_d_y1 = (y1 - y2) / d_energy_d_distance
+            d_energy_d_z1 = (z1 - z2) / d_energy_d_distance
+
+            d_energy_d_x2 = (x2 - x1) / d_energy_d_distance
+            d_energy_d_y2 = (y2 - y1) / d_energy_d_distance
+            d_energy_d_z2 = (z2 - z1) / d_energy_d_distance
+
+            grad[particle1, 0] += d_energy_d_x1
+            grad[particle1, 1] += d_energy_d_y1
+            grad[particle1, 2] += d_energy_d_z1
+
+            grad[particle2, 0] += d_energy_d_x2
+            grad[particle2, 1] += d_energy_d_y2
+            grad[particle2, 2] += d_energy_d_z2
