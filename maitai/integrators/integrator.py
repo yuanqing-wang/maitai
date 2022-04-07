@@ -1,16 +1,12 @@
 import abc
 import taichi as ti
+from simulation improt Simulation
 
 @ti.data_oriented
 class Integrator(object):
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @abc.abstractmethod
-    def step(
-            self,
-            position: ti.f32,
-            velocity: ti.f32,
-            acceleration: ti.f32,
-        ):
+    def step(self, simulation=Simulation):
         return NotImplementedError
