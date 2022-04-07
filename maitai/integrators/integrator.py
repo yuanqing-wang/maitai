@@ -9,7 +9,7 @@ class Integrator(object):
     @abc.abstractmethod
     def step(
             self,
-            geometry: ti.f32,
+            position: ti.f32,
             velocity: ti.f32,
             acceleration: ti.f32,
         ):

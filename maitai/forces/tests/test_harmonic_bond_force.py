@@ -11,8 +11,8 @@ def test_initialize_and_get_energy():
     force = mt.forces.HarmonicBondForce()
     force.add_bond(0, 1, 1.0, 1.0)
 
-    geometry = ti.field(ti.f32, (2, 3), needs_grad=True)
-    geometry.from_numpy(
+    position = ti.field(ti.f32, (2, 3), needs_grad=True)
+    position.from_numpy(
         np.array(
             [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]],
         )
@@ -23,12 +23,12 @@ def test_initialize_and_get_energy():
 
     @ti.kernel
     def test_energy():
-        _energy = force.get_energy(geometry)
+        _energy = force.get_energy(position)
         energy[None] += _energy
 
     @ti.kernel
     def test_grad():
-        force.get_grad(geometry, grad)
+        force.get_grad(position, grad)
 
     with ti.Tape(energy):
         test_energy()
@@ -45,6 +45,6 @@ def test_initialize_and_get_energy():
     )
 
     npt.assert_almost_equal(
-        -geometry.grad.to_numpy(),
+        -position.grad.to_numpy(),
         grad.to_numpy(),
     )

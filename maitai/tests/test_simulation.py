@@ -13,12 +13,12 @@ def test_simulation_construct():
     system = mt.System(n_atoms=2, forces=[force])
     simulation = mt.Simulation(system=system, integrator=integrator)
 
-    geometry = ti.field(ti.f32, (2, 3))
-    geometry.from_numpy(
+    position = ti.field(ti.f32, (2, 3))
+    position.from_numpy(
         np.array(
             [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]],
         )
     )
 
-    simulation.set_geometry(geometry)
+    simulation.set_position(position)
     energy = simulation.get_energy()

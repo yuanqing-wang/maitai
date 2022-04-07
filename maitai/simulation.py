@@ -6,26 +6,26 @@ class Simulation(object):
         self.system = system
         self.integrator = integrator
         self._energy = ti.field(float)
-        self._geometry = ti.field(float, shape=(system.n_atoms, 3))
-        self._grad = ti.field(float, shape=(system.n_atoms, 3))
+        self._position = ti.field(float, shape=(system.n_atoms, 3))
         self._velocity = ti.field(float, shape=(system.n_atoms, 3))
+        self._grad = ti.field(float, shape=(system.n_atoms, 3))
 
-    def set_geometry(self, geometry: float) -> None:
-        if isinstance(geometry, ti.Field):
-            self._geometry.copy_from(geometry)
-        elif "numpy" in type(geometry).lower():
-            self._geometry.from_numpy(np.ndarray)
-        elif "torch" in type(geometry).lower():
-            self._geometry.from_torch(geometry)
+    def set_position(self, position: float) -> None:
+        if isinstance(position, ti.Field):
+            self._position.copy_from(position)
+        elif "numpy" in type(position).lower():
+            self._position.from_numpy(np.ndarray)
+        elif "torch" in type(position).lower():
+            self._position.from_torch(position)
 
-    def get_geometry(self, geometry: float) -> None:
-        return self._geometry
+    def get_position(self, position: float) -> None:
+        return self._position
 
     @ti.kernel
     def get_energy(self) -> float:
         energy = 0.0
         for force in ti.static(self.system.forces):
-            energy = energy + force.get_energy(self._geometry)
+            energy = energy + force.get_energy(self._position)
         self._energy = energy
         return self._energy
 
@@ -37,5 +37,5 @@ class Simulation(object):
     def get_grad(self) -> ti.f32:
         self.zero_grad()
         for force in ti.static(self.system.forces):
-            force.get_grad(self._geometry, self._grad)
+            force.get_grad(self._position, self._grad)
         return self._grad

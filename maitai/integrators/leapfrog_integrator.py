@@ -15,9 +15,9 @@ class LeapfrogIntegrator(Integrator):
     @ti.func
     def step(
         self,
-        geometry: ti.f32,
+        position: ti.f32,
         velocity: ti.f32,
         acceleration: ti.f32,
     ):
         velocity += acceleration * timestep
-        geometry += velocity * timestep
+        position += velocity * timestep
