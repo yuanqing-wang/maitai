@@ -6,9 +6,9 @@ from .forces.force import Force
 class System(object):
     def __init__(
             self,
-            n_atoms: int=1,
+            masses: Union[None, List[float]]=None,
             forces: Union[None, List[Force]]=None,
         ):
-        self.n_atoms = n_atoms
+        self.masses = masses
+        self.n_atoms = len(self.masses)
         self.forces = forces
-        
