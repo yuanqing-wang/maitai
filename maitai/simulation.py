@@ -11,7 +11,12 @@ class Simulation(object):
         self._velocity = ti.field(float, shape=(system.n_atoms, 3))
 
     def set_geometry(self, geometry: float) -> None:
-        self._geometry.copy_from(geometry)
+        if isinstance(geometry, ti.Field):
+            self._geometry.copy_from(geometry)
+        elif "numpy" in type(geometry).lower():
+            self._geometry.from_numpy(np.ndarray)
+        elif "torch" in type(geometry).lower():
+            self._geometry.from_torch(geometry)
 
     def get_geometry(self, geometry: float) -> None:
         return self._geometry
