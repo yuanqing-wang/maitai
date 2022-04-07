@@ -5,10 +5,10 @@ class Simulation(object):
     def __init__(self, system, integrator) -> None:
         self.system = system
         self.integrator = integrator
-        self._geometry = ti.field(float, shape=(system.n_atoms, 3))
         self._energy = ti.field(float)
+        self._geometry = ti.field(float, shape=(system.n_atoms, 3))
         self._grad = ti.field(float, shape=(system.n_atoms, 3))
-
+        self._velocity = ti.field(float, shape=(system.n_atoms, 3))
 
     def set_geometry(self, geometry: float) -> None:
         self._geometry.copy_from(geometry)
