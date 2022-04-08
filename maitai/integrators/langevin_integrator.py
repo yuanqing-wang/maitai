@@ -25,5 +25,3 @@ class LangevinIntegrator(Integrator):
         self.temperature = temperature
         self.collision_rate = collision_rate
         self.timestep = timestep
-
-    

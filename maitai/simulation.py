@@ -9,6 +9,8 @@ class Simulation(object):
         self._position = ti.field(float, shape=(system.n_atoms, 3))
         self._velocity = ti.field(float, shape=(system.n_atoms, 3))
         self._grad = ti.field(float, shape=(system.n_atoms, 3))
+        self.zero_grad()
+        self.zero_velocity()
 
     def set_position(self, position: float) -> None:
         if isinstance(position, ti.Field):
@@ -34,8 +36,21 @@ class Simulation(object):
         self._grad.fill(0.0)
 
     @ti.func
+    def zero_velocity(self):
+        self._velocity.fill(0.0)
+
+    @ti.func
     def get_grad(self) -> ti.f32:
         self.zero_grad()
         for force in ti.static(self.system.forces):
             force.get_grad(self._position, self._grad)
         return self._grad
+
+    @ti.func
+    def get_acceleration(self) -> ti.f32:
+        masses = self.system.masses
+        grad = self.get_grad()
+        for idx_atom, idx_dimension in self._grad:
+            grad[idx_atom, idx_dimension] = grad[idx_atom, idx_dimension]\
+                / masses[idx_atom]
+        return grad
