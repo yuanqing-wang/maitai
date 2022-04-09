@@ -25,7 +25,6 @@ class Simulation(object):
     def get_energy(self) -> ti.f32:
         self._energy[None] = 0.0
         for force in ti.static(self.system.forces):
-            print(force.get_energy(self._position))
             self._energy[None] += force.get_energy(self._position)
         return self._energy
 

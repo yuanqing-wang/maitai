@@ -11,7 +11,6 @@ class HarmonicBondForce(Force):
     def __init__(self, bond_parameters=[]):
         super().__init__()
         self.bond_parameters = bond_parameters
-        self._energy = ti.field(ti.f32, shape=())
 
     def add_bond(
             self,
@@ -43,14 +42,13 @@ class HarmonicBondForce(Force):
         self.bond_parameters[index] = (particle1, particle2, k)
 
     @ti.func
-    def get_energy(self, position: ti.f32) -> ti.f32:
-        self._energy[None] = 0.0
+    def get_energy(self, position: ti.f32, energy: ti.f32):
+        energy[None] = 0.0
         for particle1, particle2, length, k in ti.static(self.bond_parameters):
             x1, y1, z1 = position[particle1, 0], position[particle1, 1], position[particle1, 2]
             x2, y2, z2 = position[particle2, 0], position[particle2, 1], position[particle2, 2]
             distance = ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2) ** 0.5
-            self._energy[None] += 0.5 * k * (distance - length) ** 2
-        return self._energy
+            energy[None] += 0.5 * k * (distance - length) ** 2
 
     @ti.func
     def get_grad(self, position: ti.f32, grad: ti.f32) -> None:

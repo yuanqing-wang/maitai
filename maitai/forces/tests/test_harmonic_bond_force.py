@@ -19,12 +19,10 @@ def test_initialize_and_get_energy():
     )
 
     energy = ti.field(ti.f32, (), needs_grad=True)
-    energy[None] = 0.0
 
     @ti.kernel
     def test_energy():
-        _energy = force.get_energy(position)
-        energy[None] += _energy
+        force.get_energy(position, energy)
 
     @ti.kernel
     def test_grad():

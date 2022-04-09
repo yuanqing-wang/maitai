@@ -25,4 +25,5 @@ def test_simulation_construct():
     )
 
     simulation.set_position(position)
+    simulation.get_energy()
     energy = simulation._energy
