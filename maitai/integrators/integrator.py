@@ -1,11 +1,11 @@
 import abc
 import taichi as ti
-from simulation improt Simulation
+from ..simulation import Simulation
 
 @ti.data_oriented
 class Integrator(object):
     def __init__(self) -> None:
-        self.acceleration = ti.field()
+        pass
 
     @ti.func
     @staticmethod

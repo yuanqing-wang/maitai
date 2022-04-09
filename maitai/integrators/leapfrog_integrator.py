@@ -14,15 +14,27 @@ class LeapfrogIntegrator(Integrator):
         self.timestep = timestep
 
     @ti.func
+    def velocity_step(
+        self,
+        simulation: Simulation,
+    ):
+        acceleration = simulation.get_acceleration()
+        delta_v = self.scalar_multiply(acceleration, 0.5 * self.timestep)
+        self.add(simulation._velocity, delta_v)
+
+    @ti.func
+    def position_step(
+        self,
+        simulation: Simulation,
+    ):
+        delta_x = self.scalar_multiply(simulation._velocity, self.timestep)
+        self.add(simulation._position, delta_x)
+
+    @ti.func
     def step(
         self,
         simulation: Simulation,
     ):
-    acceleration = simulation.get_acceleration()
-    delta_v = self.scalar_multiply(acceleration, 0.5 * self.timestep)
-    self.add(simulation._velocity, delta_v)
-    delta_x = self.scalar_multiply(simulation._velocity, self.timestep)
-    self.add(simulation._position, delta_x)
-    acceleration = simulation.get_acceleration()
-    delta_v = self.scalar_multiply(acceleration, 0.5 * self.timestep)
-    self.add(simulation._velocity, delta_v)
+        self.velocity_step(simulation)
+        self.position_step(simulation)
+        self.velocity_step(simulation)
