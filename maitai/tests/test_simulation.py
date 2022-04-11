@@ -25,5 +25,13 @@ def test_simulation_construct():
     )
 
     simulation.set_position(position)
-    simulation.get_energy()
-    energy = simulation._energy
+
+    @ti.kernel
+    def test_energy() -> ti.f32:
+        simulation.compute_energy()
+        energy = simulation._energy
+        return energy
+
+
+    energy = test_energy().to_numpy()
+    print(energy)

@@ -21,11 +21,13 @@ class Simulation(object):
     def get_position(self) -> None:
         return self._position
 
-    @ti.kernel
-    def get_energy(self) -> ti.f32:
+    @ti.func
+    def compute_energy(self):
         self._energy[None] = 0.0
         for force in ti.static(self.system.forces):
-            self._energy[None] += force.get_energy(self._position)
+            force.get_energy(self._position, self._energy)
+
+    def get_energy(self):
         return self._energy
 
     @ti.func
@@ -38,17 +40,18 @@ class Simulation(object):
             self._velocity[x, y] = 0.0
 
     @ti.func
-    def get_grad(self) -> ti.f32:
+    def compute_grad(self) -> ti.f32:
         self.zero_grad()
         for force in ti.static(self.system.forces):
             force.get_grad(self._position, self._grad)
+
+    def get_grad(self):
         return self._grad
 
     @ti.func
-    def get_acceleration(self) -> ti.f32:
+    def compute_acceleration(self) -> ti.f32:
         masses = self.system.masses
-        grad = self.get_grad()
+        self.compute_grad()
         for idx_atom, idx_dimension in self._grad:
-            grad[idx_atom, idx_dimension] = grad[idx_atom, idx_dimension]\
+            self._grad[idx_atom, idx_dimension] = self._grad[idx_atom, idx_dimension]\
                 / masses[idx_atom]
-        return grad
